@@ -1,4 +1,4 @@
-# Vote App v1
+# Vote API v1
 
 ## Overview
 The Vote App is a simple real-time voting application developed using Python, FastAPI, and SQLModel. This application allows users to cast votes, which are stored in a SQLite database, and observe real-time vote counts via a WebSocket connection.
