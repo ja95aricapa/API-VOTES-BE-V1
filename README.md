@@ -18,7 +18,7 @@ The Vote App is a simple real-time voting application developed using Python, Fa
 
 ### Installation
 1. Clone the repository:
-   ```bash
+   ```
    git clone https://github.com/your-username/vote-app.git
    cd vote-app
    ```
