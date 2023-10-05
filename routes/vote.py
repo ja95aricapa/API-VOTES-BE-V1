@@ -27,12 +27,14 @@ async def create_vote_route(vote: Vote) -> Vote:
     if not connected_clients:
         return new_vote
     else:
-        vote_counts_json = get_vote_counts_service(engine=engine)
+        vote_counts = get_vote_counts_service(engine=engine)
         # send updated vote count to all connected clients
         disconnected_clients = []
         for client in connected_clients:
             try:
-                await client.send_text(vote_counts_json)
+                await client.send_text(
+                    vote_counts
+                )  # Se asume que vote_counts es una cadena JSON
             except:
                 disconnected_clients.append(client)
         # Remove disconnected clients
@@ -42,11 +44,11 @@ async def create_vote_route(vote: Vote) -> Vote:
 
 
 @vote_router.get("/vote/")
-def get_votes_route() -> list[Vote]:
+def get_votes_route() -> list[dict]:
     """Endpoint to fetch all votes.
 
     Returns:
-        list[Vote]: A list of all vote objects.
+        list[dict]: A list of all vote objects.
     """
     votes = get_votes_service(engine=engine)
     return votes

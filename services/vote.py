@@ -27,7 +27,7 @@ def create_vote_service(engine: engine, vote: Vote) -> Vote:
         )
 
 
-def get_votes_service(engine: engine) -> list[Vote]:
+def get_votes_service(engine: engine) -> list[dict]:
     """Service to fetch all votes.
 
     Args:
@@ -37,7 +37,7 @@ def get_votes_service(engine: engine) -> list[Vote]:
         HTTPException: An exception if the votes cannot be fetched.
 
     Returns:
-        list[Vote]: A list of all vote objects.
+        list[dict]: A list of all vote objects.
     """
     try:
         votes = get_votes_query(engine=engine)

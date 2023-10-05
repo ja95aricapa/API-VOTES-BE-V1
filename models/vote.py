@@ -1,16 +1,35 @@
 from typing import Optional
-from sqlmodel import Field, SQLModel, Session, select, and_, func
+from sqlmodel import Field, SQLModel, Session, select, and_, func, Enum, Index
 from config.database import engine
+from pydantic import validator
+
+
+class VoteValue(str, Enum):
+    yes = "yes"
+    no = "no"
+
+
+class VoteStatus(str, Enum):
+    valid = "valid"
+    invalid = "invalid"
 
 
 class Vote(SQLModel, table=True):
-    """
-    Defines the Vote model for representing a Vote Table.
-    """
-
     id: Optional[int] = Field(default=None, primary_key=True)
-    value: str
-    status: str
+    value: VoteValue
+    status: VoteStatus
+
+    @validator("value", pre=True, always=True)
+    def validate_value(cls, value):
+        if VoteValue.__dict__.get(value) is None:
+            raise ValueError(f"Invalid value for vote: {value}")
+        return VoteValue(value)
+
+    @validator("status", pre=True, always=True)
+    def validate_status(cls, status):
+        if VoteStatus.__dict__.get(status) is None:
+            raise ValueError(f"Invalid status: {status}")
+        return VoteStatus(status)
 
 
 def create_vote_query(engine: engine, vote: Vote) -> Vote:
@@ -30,18 +49,18 @@ def create_vote_query(engine: engine, vote: Vote) -> Vote:
         return vote
 
 
-def get_votes_query(engine: engine) -> list[Vote]:
+def get_votes_query(engine: engine) -> list[dict]:
     """Fetches all votes from the database.
 
     Args:
         engine (engine): The database engine.
 
     Returns:
-        votes (List[Vote]): A list of votes.
+        votes (List[dict]): A list of votes.
     """
     with Session(engine) as session:
         votes = session.exec(select(Vote)).all()
-        return votes
+        return [vote.dict() for vote in votes]  # Convert Vote objects to dictionaries
 
 
 def get_vote_counts_query(engine: engine) -> dict[str, int]:
