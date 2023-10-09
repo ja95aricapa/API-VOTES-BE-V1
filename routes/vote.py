@@ -72,5 +72,8 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
     except:
         pass
     finally:
-        connected_clients.remove(websocket)
-        await websocket.close()
+        if websocket in connected_clients:
+            connected_clients.remove(websocket)
+        # Verifica si la conexión ya está cerrada
+        if not websocket.client_state.value == 2:
+            await websocket.close()
